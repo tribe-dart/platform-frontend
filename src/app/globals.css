@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #22c55e;
+  --color-primary-hover: #16a34a;
+  --color-primary-light: #dcfce7;
+  --color-secondary: #5f6368;
+  --color-accent: #fbbc04;
+  --color-success: #34a853;
+  --color-warning: #f9ab00;
+  --color-error: #ea4335;
+  --surface-bg: #f8f9fa;
+  --surface-card: #ffffff;
+  --surface-sidebar: #1e293b;
+  --surface-header: #ffffff;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --text-tertiary: #9aa0a6;
+  --header-height: 64px;
+  --sidebar-width: 260px;
+}
+
+body {
+  background: var(--surface-bg);
+  color: var(--text-primary);
+}
+
+/* Layout utility classes */
+.layout-header-height {
+  height: var(--header-height);
+  min-height: var(--header-height);
+}
+
+.layout-sidebar-width {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+}
+
+.layout-content-with-sidebar {
+  margin-left: var(--sidebar-width);
+}
+
+.layout-content-with-header {
+  padding-top: var(--header-height);
+}
+
+/* Mobile bottom nav offset - prevent content from being hidden behind fixed nav */
+.mobile-nav-offset {
+  padding-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-nav-offset {
+    padding-bottom: 0;
+  }
+}
