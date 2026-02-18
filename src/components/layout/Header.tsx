@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRef, useEffect, useState } from "react";
 import {
@@ -54,7 +55,7 @@ export function Header() {
         </button>
         <Link
           href="/dashboard"
-          className="text-xl font-semibold text-[var(--color-primary)]"
+          className="text-xl font-semibold text-(--color-primary)"
         >
           LearnPlatform
         </Link>
@@ -65,22 +66,22 @@ export function Header() {
           href="/dashboard"
           className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             pathname === "/dashboard"
-              ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+              ? "bg-(--color-primary-light) text-(--color-primary)"
               : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
           }`}
         >
           Dashboard
         </Link>
-        <Link
+        {/* <Link
           href="/programmes/p1/calendar"
           className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             pathname.includes("/calendar")
-              ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+              ? "bg-(--color-primary-light) text-(--color-primary)"
               : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
           }`}
         >
           Calendar
-        </Link>
+        </Link> */}
       </nav>
 
       <div className="flex items-center gap-2">
@@ -105,12 +106,13 @@ export function Header() {
             aria-expanded={avatarOpen}
             aria-haspopup="true"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-primary)] text-sm font-medium text-white">
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-(--color-primary) text-sm font-medium text-white">
               {user?.avatar ? (
-                <img
+                <Image
                   src={user.avatar}
                   alt=""
-                  className="h-full w-full rounded-full object-cover"
+                  fill
+                  className="rounded-full object-cover"
                 />
               ) : (
                 displayName[0]?.toUpperCase() ?? "U"

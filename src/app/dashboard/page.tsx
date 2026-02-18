@@ -47,7 +47,7 @@ function ProgrammeCard({
       transition={{ duration: 0.4, delay: index * 0.1 }}
       className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="h-2 bg-gradient-to-r from-[#22c55e] to-[#16a34a]" />
+      <div className="h-2 bg-linear-to-r from-[#22c55e] to-[#16a34a]" />
       <div className="p-5">
         <h3 className="font-semibold text-zinc-900">{programme.title}</h3>
         <p className="mt-1 text-sm text-zinc-500">{programme.institution}</p>
@@ -62,7 +62,7 @@ function ProgrammeCard({
               initial={{ width: 0 }}
               animate={{ width: `${programme.progress}%` }}
               transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              className="h-full rounded-full bg-gradient-to-r from-[#22c55e] to-[#16a34a]"
+              className="h-full rounded-full bg-linear-to-r from-[#22c55e] to-[#16a34a]"
             />
           </div>
         </div>
@@ -99,7 +99,7 @@ function EventItem({ event }: { event: CalendarEvent }) {
 
   return (
     <div className="flex gap-3 rounded-lg p-3 transition-colors hover:bg-zinc-50">
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <div className={`rounded px-2 py-0.5 text-xs font-medium ${colorClass}`}>
           {event.type.replace('_', ' ')}
         </div>
@@ -126,7 +126,7 @@ function RecentActivityItem({
 }) {
   return (
     <div className="flex gap-3 rounded-lg p-3 transition-colors hover:bg-zinc-50">
-      <div className="h-2 w-2 flex-shrink-0 rounded-full bg-[#22c55e] mt-1.5" />
+      <div className="h-2 w-2 shrink-0 rounded-full bg-[#22c55e] mt-1.5" />
       <div className="min-w-0 flex-1">
         <p className="text-sm text-zinc-900">{title}</p>
         <p className="text-xs text-zinc-500">{time}</p>
@@ -189,7 +189,7 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="rounded-xl bg-gradient-to-r from-[#22c55e] to-[#16a34a] p-6 text-white mt-12"
+        className="rounded-xl bg-linear-to-r from-[#22c55e] to-[#16a34a] p-6 text-white mt-12"
       >
         <h1 className="text-2xl font-bold md:text-3xl">
           Welcome back, {firstName}!
@@ -221,7 +221,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Right sidebar */}
-        <aside className="w-full space-y-6 lg:w-80 lg:flex-shrink-0">
+        <aside className="w-full space-y-6 lg:w-80 lg:shrink-0">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
