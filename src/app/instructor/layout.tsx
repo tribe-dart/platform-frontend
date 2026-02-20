@@ -1,20 +1,18 @@
 'use client';
 
 import { Header } from '@/components/layout/Header';
-import { MobileNav } from '@/components/layout/MobileNav';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 
-export default function DashboardLayout({
+export default function InstructorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <AuthGuard requireAuth>
-      <div className="min-h-screen bg-zinc-50">
+      <div className="min-h-screen bg-[var(--surface-bg)]">
         <Header />
-        <main className="pb-20 md:pb-0">{children}</main>
-        <MobileNav />
+        <main className="pt-[var(--header-height)]">{children}</main>
       </div>
     </AuthGuard>
   );

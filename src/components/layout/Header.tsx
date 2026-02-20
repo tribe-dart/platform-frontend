@@ -70,22 +70,36 @@ export function Header() {
           href="/dashboard"
           className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
             pathname === "/dashboard"
-              ? "bg-(--color-primary-light) text-(--color-primary)"
+              ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
               : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
           }`}
         >
           Dashboard
         </Link>
-        {/* <Link
-          href="/programmes/p1/calendar"
-          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-            pathname.includes("/calendar")
-              ? "bg-(--color-primary-light) text-(--color-primary)"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-          }`}
-        >
-          Calendar
-        </Link> */}
+        {user?.role === 'admin' && (
+          <Link
+            href="/admin"
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              pathname.startsWith("/admin")
+                ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            Admin
+          </Link>
+        )}
+        {user?.role === 'instructor' && (
+          <Link
+            href="/instructor"
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              pathname.startsWith("/instructor")
+                ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            Instructor
+          </Link>
+        )}
       </nav>
 
       <div className="flex items-center gap-2">

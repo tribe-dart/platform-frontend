@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Calendar, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight, Shield } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { programmes, calendarEvents } from '@/lib/mock-data';
 import type { Programme, CalendarEvent } from '@/types';
@@ -181,6 +181,26 @@ export default function DashboardPage() {
   const upcomingEvents = calendarEvents
     .filter((e) => new Date(e.startDate) >= new Date())
     .slice(0, 5);
+
+  // Redirect admins to admin dashboard
+  if (user?.role === 'admin') {
+    router.push('/admin');
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#f46711] border-t-transparent" />
+      </div>
+    );
+  }
+
+  // Redirect instructors to instructor dashboard
+  if (user?.role === 'instructor') {
+    router.push('/instructor');
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#f46711] border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">

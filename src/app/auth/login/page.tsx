@@ -10,7 +10,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading } = useAuthStore();
+  const { login, isLoading, mustChangePassword } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -22,9 +22,13 @@ export default function LoginPage() {
     setError('');
     try {
       await login(email, password);
-      router.push('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      if (mustChangePassword) {
+        router.push('/auth/change-password');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Invalid email or password. Please try again.');
     }
   };
 
