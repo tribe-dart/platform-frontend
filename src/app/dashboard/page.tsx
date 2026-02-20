@@ -47,7 +47,7 @@ function ProgrammeCard({
       transition={{ duration: 0.4, delay: index * 0.1 }}
       className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="h-2 bg-linear-to-r from-[#22c55e] to-[#16a34a]" />
+      <div className="h-2 bg-linear-to-r from-[#f46711] to-[#d4550d]" />
       <div className="p-5">
         <h3 className="font-semibold text-zinc-900">{programme.title}</h3>
         <p className="mt-1 text-sm text-zinc-500">{programme.institution}</p>
@@ -62,7 +62,7 @@ function ProgrammeCard({
               initial={{ width: 0 }}
               animate={{ width: `${programme.progress}%` }}
               transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              className="h-full rounded-full bg-linear-to-r from-[#22c55e] to-[#16a34a]"
+              className="h-full rounded-full bg-linear-to-r from-[#f46711] to-[#d4550d]"
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ function ProgrammeCard({
 
         <Link
           href={`/programmes/${programme.id}`}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#22c55e] px-4 py-2.5 font-medium text-white transition-colors hover:bg-[#16a34a]"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#f46711] px-4 py-2.5 font-medium text-white transition-colors hover:bg-[#d4550d]"
         >
           Continue Learning
           <ChevronRight className="h-4 w-4" />
@@ -126,7 +126,7 @@ function RecentActivityItem({
 }) {
   return (
     <div className="flex gap-3 rounded-lg p-3 transition-colors hover:bg-zinc-50">
-      <div className="h-2 w-2 shrink-0 rounded-full bg-[#22c55e] mt-1.5" />
+      <div className="h-2 w-2 shrink-0 rounded-full bg-[#f46711] mt-1.5" />
       <div className="min-w-0 flex-1">
         <p className="text-sm text-zinc-900">{title}</p>
         <p className="text-xs text-zinc-500">{time}</p>
@@ -148,7 +148,7 @@ export default function DashboardPage() {
   if (!isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#22c55e] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#f46711] border-t-transparent" />
       </div>
     );
   }
@@ -189,7 +189,7 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="rounded-xl bg-linear-to-r from-[#22c55e] to-[#16a34a] p-6 text-white mt-12"
+        className="rounded-xl bg-linear-to-r from-[#f46711] to-[#d4550d] p-6 text-white mt-12"
       >
         <h1 className="text-2xl font-bold md:text-3xl">
           Welcome back, {firstName}!
@@ -229,7 +229,7 @@ export default function DashboardPage() {
             className="rounded-xl border border-zinc-200 bg-white p-4"
           >
             <h3 className="flex items-center gap-2 font-semibold text-zinc-900">
-              <Calendar className="h-5 w-5 text-[#22c55e]" />
+              <Calendar className="h-5 w-5 text-[#f46711]" />
               Upcoming Events
             </h3>
             <div className="mt-4 space-y-1">

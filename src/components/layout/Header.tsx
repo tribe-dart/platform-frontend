@@ -53,11 +53,15 @@ export function Header() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <Link
-          href="/dashboard"
-          className="text-xl font-semibold text-(--color-primary)"
-        >
-          LearnPlatform
+        <Link href="/dashboard" className="flex items-center">
+          <Image
+            src="/cropped-LOGO-300x93.png"
+            alt="Innov8ive Academy"
+            width={150}
+            height={46}
+            priority
+            className="h-8 w-auto"
+          />
         </Link>
       </div>
 

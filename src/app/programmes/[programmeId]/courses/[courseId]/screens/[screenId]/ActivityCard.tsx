@@ -15,8 +15,10 @@ import {
   AlertCircle,
   Info,
   Lightbulb,
+  Package,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ScormPlayer } from "@/components/scorm/ScormPlayer";
 
 interface ActivityCardProps {
   activity: Activity;
@@ -134,6 +136,47 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           baseClasses={baseClasses}
         />
       );
+
+    case "scorm_player": {
+      const scormConfig = activity.config as {
+        packageId?: string;
+        version?: "1.2" | "2004";
+      };
+      if (!scormConfig?.packageId) {
+        return (
+          <div className={baseClasses}>
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-100 text-orange-600">
+                <Package className="h-5 w-5" />
+              </div>
+              <h3 className="font-semibold text-slate-900">{activity.title}</h3>
+            </div>
+            <p className="mt-2 text-sm text-slate-500">
+              SCORM package not configured.
+            </p>
+          </div>
+        );
+      }
+      return (
+        <div className={baseClasses}>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-100 text-orange-600">
+              <Package className="h-5 w-5" />
+            </div>
+            <h3 className="font-semibold text-slate-900">{activity.title}</h3>
+          </div>
+          {activity.description && (
+            <p className="mb-3 text-sm text-slate-600">
+              {activity.description}
+            </p>
+          )}
+          <ScormPlayer
+            packageId={scormConfig.packageId}
+            version={scormConfig.version}
+          />
+        </div>
+      );
+    }
 
     default:
       return (

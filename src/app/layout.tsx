@@ -7,7 +7,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Learn Platform",
+  title: "Innov8ive Academy",
   description: "Online learning platform",
 };
 

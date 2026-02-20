@@ -103,7 +103,8 @@ export type ActivityType =
   | 'quick_answer_check'
   | 'geotagging'
   | 'participation_grade'
-  | 'pronunciation_checker';
+  | 'pronunciation_checker'
+  | 'scorm_player';
 
 export interface Activity {
   id: string;

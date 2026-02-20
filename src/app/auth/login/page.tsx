@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function LoginPage() {
@@ -34,17 +35,24 @@ export default function LoginPage() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="flex flex-col justify-center bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-8 py-16 md:w-1/2 md:px-12 md:py-24"
+        className="flex flex-col justify-center bg-white px-8 py-16 md:w-1/2 md:px-12 md:py-24"
       >
         <div className="mx-auto max-w-md">
-          <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-            LearnPlatform
-          </h1>
+          <div className="mb-6">
+            <Image
+              src="/cropped-LOGO-300x93.png"
+              alt="Innov8ive Academy"
+              width={300}
+              height={93}
+              priority
+              className="h-auto w-64"
+            />
+          </div>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mt-4 text-lg text-white/90 md:text-xl"
+            className="mt-4 text-lg text-slate-600 md:text-xl"
           >
             Transform your career with world-class education
           </motion.p>
@@ -78,7 +86,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
-                  className="mt-1.5 block w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-[#22c55e] focus:outline-none focus:ring-1 focus:ring-[#22c55e]"
+                  className="mt-1.5 block w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-[#f46711] focus:outline-none focus:ring-1 focus:ring-[#f46711]"
                   placeholder="you@example.com"
                 />
               </div>
@@ -98,7 +106,7 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="current-password"
-                    className="block w-full rounded-lg border border-zinc-300 px-4 py-2.5 pr-10 text-zinc-900 placeholder-zinc-400 focus:border-[#22c55e] focus:outline-none focus:ring-1 focus:ring-[#22c55e]"
+                    className="block w-full rounded-lg border border-zinc-300 px-4 py-2.5 pr-10 text-zinc-900 placeholder-zinc-400 focus:border-[#f46711] focus:outline-none focus:ring-1 focus:ring-[#f46711]"
                     placeholder="••••••••"
                   />
                   <button
@@ -122,13 +130,13 @@ export default function LoginPage() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-zinc-300 text-[#22c55e] focus:ring-[#22c55e]"
+                    className="h-4 w-4 rounded border-zinc-300 text-[#f46711] focus:ring-[#f46711]"
                   />
                   <span className="text-sm text-zinc-600">Remember me</span>
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm font-medium text-[#22c55e] hover:text-[#16a34a]"
+                  className="text-sm font-medium text-[#f46711] hover:text-[#d4550d]"
                 >
                   Forgot password?
                 </Link>
@@ -147,28 +155,11 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-lg bg-[#22c55e] px-4 py-3 font-medium text-white transition-colors hover:bg-[#16a34a] focus:outline-none focus:ring-2 focus:ring-[#22c55e] focus:ring-offset-2 disabled:opacity-50"
+                className="w-full rounded-lg bg-[#f46711] px-4 py-3 font-medium text-white transition-colors hover:bg-[#d4550d] focus:outline-none focus:ring-2 focus:ring-[#f46711] focus:ring-offset-2 disabled:opacity-50"
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
-
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-zinc-200" />
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="bg-white px-3 text-sm text-zinc-500">or</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="mt-4 w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
-              >
-                Sign in with SSO
-              </button>
-            </div>
           </div>
         </div>
       </motion.div>
