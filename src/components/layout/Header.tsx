@@ -107,7 +107,7 @@ export function Header() {
             href="/dashboard"
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               pathname === "/dashboard"
-                ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                ? "bg-(--color-primary-light) text-(--color-primary)"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
@@ -118,7 +118,7 @@ export function Header() {
               href="/admin"
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 pathname.startsWith("/admin")
-                  ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                  ? "bg-(--color-primary-light) text-(--color-primary)"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -130,7 +130,7 @@ export function Header() {
               href="/instructor"
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 pathname.startsWith("/instructor")
-                  ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                  ? "bg-(--color-primary-light) text-(--color-primary)"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -288,7 +288,7 @@ export function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
                         pathname === href || pathname.startsWith(href + "/")
-                          ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                          ? "bg-(--color-primary-light) text-(--color-primary)"
                           : "text-slate-700 hover:bg-slate-100"
                       }`}
                     >

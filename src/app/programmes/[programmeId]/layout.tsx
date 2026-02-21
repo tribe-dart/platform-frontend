@@ -78,11 +78,6 @@ export default function ProgrammeLayout({
     );
   }
 
-  const courses = (programme.courses || []).map((c) => ({
-    id: c._id,
-    title: c.title,
-  }));
-
   return (
     <AuthGuard requireAuth>
       <div className="flex min-h-screen flex-col bg-[var(--surface-bg)]">
@@ -91,7 +86,7 @@ export default function ProgrammeLayout({
           <Sidebar
             programmeId={programmeId}
             programmeName={programme.title}
-            courses={courses}
+            courses={[]}
           />
           <main className="flex flex-1 flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto mobile-nav-offset">

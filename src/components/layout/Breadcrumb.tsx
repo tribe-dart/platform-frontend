@@ -21,7 +21,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
         return (
           <span key={index} className="flex items-center gap-1">
             {index > 0 && (
-              <ChevronRight className="h-4 w-4 flex-shrink-0 text-slate-400" />
+              <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />
             )}
             {isLast || !item.href ? (
               <span className="font-medium text-slate-900">{item.label}</span>

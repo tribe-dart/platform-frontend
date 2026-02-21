@@ -7,7 +7,6 @@ import {
   Plus,
   Edit2,
   Trash2,
-  Mail,
   Shield,
   GraduationCap,
   User,
@@ -17,7 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface UserData {
   _id: string;
@@ -47,8 +46,8 @@ export default function UsersAdminPage() {
 
       const data = await apiFetch(`/admin/users?${params.toString()}`);
       setUsers(data.users || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load users');
     } finally {
       setLoading(false);
     }
@@ -65,8 +64,8 @@ export default function UsersAdminPage() {
       await apiFetch(`/admin/users/${user._id}`, { method: 'DELETE' });
       setSuccess(`User "${user.name}" deleted successfully`);
       loadUsers();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete user');
     }
   };
 
@@ -83,7 +82,7 @@ export default function UsersAdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--surface-bg)]">
+    <div className="min-h-screen bg-(--surface-bg)">
       <div className="mx-auto max-w-7xl px-3 py-6 sm:px-4 sm:py-8">
         <div className="mb-8">
           <Link
@@ -102,7 +101,7 @@ export default function UsersAdminPage() {
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center justify-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)] sm:w-auto"
+              className="flex items-center justify-center gap-2 rounded-lg bg-(--color-primary) px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-hover) sm:w-auto"
             >
               <Plus className="h-4 w-4" />
               Create User
@@ -136,13 +135,13 @@ export default function UsersAdminPage() {
               placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-slate-900 placeholder:text-slate-400 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+              className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-slate-900 placeholder:text-slate-400 focus:border-(--color-primary) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20"
             />
           </div>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+            className="rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-(--color-primary) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20"
           >
             <option value="">All Roles</option>
             <option value="student">Students</option>
@@ -153,7 +152,7 @@ export default function UsersAdminPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+            <Loader2 className="h-8 w-8 animate-spin text-(--color-primary)" />
           </div>
         ) : users.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
@@ -271,7 +270,7 @@ function UserModal({
 
     try {
       if (user) {
-        const body: any = { name, email, role, bio };
+        const body: { name: string; email: string; role: string; bio: string; password?: string } = { name, email, role, bio };
         if (password) body.password = password;
 
         await apiFetch(`/admin/users/${user._id}`, {
@@ -286,8 +285,8 @@ function UserModal({
         });
         onSuccess(`User "${name}" created successfully`);
       }
-    } catch (err: any) {
-      onError(err.message);
+    } catch (err: unknown) {
+      onError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -321,7 +320,7 @@ function UserModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-(--color-primary) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20"
               placeholder="John Doe"
             />
           </div>
@@ -333,7 +332,7 @@ function UserModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-(--color-primary) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20"
               placeholder="john@example.com"
             />
           </div>
@@ -347,7 +346,7 @@ function UserModal({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required={!user}
-              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-(--color-primary) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20"
               placeholder="••••••••"
               minLength={8}
             />
@@ -360,8 +359,8 @@ function UserModal({
             <label className="block text-sm font-medium text-slate-700">Role</label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as any)}
-              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+              onChange={(e) => setRole(e.target.value as 'student' | 'instructor' | 'admin')}
+              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-(--color-primary) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20"
             >
               <option value="student">Student</option>
               <option value="instructor">Instructor</option>
@@ -377,7 +376,7 @@ function UserModal({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={3}
-              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20"
+              className="mt-1.5 block w-full rounded-lg border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-(--color-primary) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20"
               placeholder="Brief description..."
             />
           </div>
@@ -393,7 +392,7 @@ function UserModal({
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 rounded-lg bg-[var(--color-primary)] px-4 py-2.5 font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)] disabled:opacity-50"
+              className="flex-1 rounded-lg bg-(--color-primary) px-4 py-2.5 font-medium text-white transition-colors hover:bg-(--color-primary-hover) disabled:opacity-50"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">

@@ -17,8 +17,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/scorm-proxy/:packageId/:path*",
-        destination: `${apiBase}/api/scorm/proxy/:packageId/:path*`,
+        source: "/api/scorm-proxy/:ticket/:packageId/:path*",
+        destination: `${apiBase}/api/scorm/proxy/:ticket/:packageId/:path*`,
       },
     ];
   },

@@ -22,11 +22,19 @@ interface CoursePageProps {
   params: Promise<{ programmeId: string; courseId: string }>;
 }
 
+interface Activity {
+  id: string;
+  title: string;
+  type: string;
+  isAssessed?: boolean;
+  config?: Record<string, string | undefined>;
+}
+
 interface Screen {
   _id: string;
   title: string;
   estimatedTime?: number;
-  activities: any[];
+  activities: Activity[];
 }
 
 interface Week {
@@ -113,7 +121,7 @@ export default function CoursePage({ params }: CoursePageProps) {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        <Loader2 className="h-8 w-8 animate-spin text-(--color-primary)" />
       </div>
     );
   }
@@ -176,7 +184,7 @@ export default function CoursePage({ params }: CoursePageProps) {
           </div>
           <div className="h-2 flex-1 rounded-full bg-slate-200 sm:max-w-xs">
             <motion.div
-              className="h-full rounded-full bg-[var(--color-primary)]"
+              className="h-full rounded-full bg-(--color-primary)"
               initial={{ width: 0 }}
               animate={{
                 width: `${(completedCount / totalScreens) * 100}%`,
@@ -196,7 +204,7 @@ export default function CoursePage({ params }: CoursePageProps) {
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
               activeTab === id
-                ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+                ? "border-(--color-primary) text-(--color-primary)"
                 : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
@@ -217,7 +225,7 @@ export default function CoursePage({ params }: CoursePageProps) {
             transition={{ duration: 0.2 }}
             className="space-y-4"
           >
-            {course.weeks.map((week, weekIndex) => {
+            {course.weeks.map((week) => {
               const isExpanded = expandedWeeks.has(week._id);
               const weekCompleted = week.screens.filter(
                 (s) => (screenStatuses[s._id] ?? 'unread') === "done"
@@ -247,7 +255,7 @@ export default function CoursePage({ params }: CoursePageProps) {
                         <div className="mt-1 flex items-center gap-3">
                           <div className="h-1.5 flex-1 max-w-[120px] rounded-full bg-slate-200">
                             <div
-                              className="h-full rounded-full bg-[var(--color-primary)]"
+                              className="h-full rounded-full bg-(--color-primary)"
                               style={{ width: `${weekProgress}%` }}
                             />
                           </div>
@@ -397,7 +405,7 @@ export default function CoursePage({ params }: CoursePageProps) {
                         href={cfg.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-3 inline-flex items-center rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+                        className="mt-3 inline-flex items-center rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-hover)"
                       >
                         Join session
                       </a>

@@ -27,8 +27,8 @@ export default function LoginPage() {
       } else {
         router.push('/dashboard');
       }
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password. Please try again.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Invalid email or password. Please try again.');
     }
   };
 

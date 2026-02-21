@@ -37,6 +37,7 @@ export function ScormPlayer({
 
   const [launchUrl, setLaunchUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [iframeReady, setIframeReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [completionStatus, setCompletionStatus] = useState("not attempted");
@@ -64,7 +65,6 @@ export function ScormPlayer({
     if (version === "1.2") {
       return {
         LMSInitialize: (_param: string = "") => {
-          console.log('[SCORM API] LMSInitialize called');
           if (runtime.initialized) return "true";
           runtime.initialized = true;
           runtime.terminated = false;
@@ -194,10 +194,13 @@ export function ScormPlayer({
 
     const loadPackage = async () => {
       try {
-        console.log('[SCORM Player] Loading package:', packageId);
-        const pkg = await apiFetch(`/scorm/packages/${packageId}`);
-        console.log('[SCORM Player] Package loaded:', pkg);
-        
+        const [pkg, ticketRes] = await Promise.all([
+          apiFetch(`/scorm/packages/${packageId}`),
+          apiFetch(`/scorm/viewer-ticket`, {
+            method: "POST",
+            body: JSON.stringify({ packageId }),
+          }),
+        ]);
         if (!mounted) return;
 
         if (pkg.status !== "ready") {
@@ -205,25 +208,26 @@ export function ScormPlayer({
           return;
         }
 
-        console.log('[SCORM Player] Launch URL:', pkg.fullLaunchUrl);
-        setLaunchUrl(pkg.fullLaunchUrl);
+        if (!ticketRes.ticket) {
+          setError("Failed to create viewer session.");
+          return;
+        }
+
+        // Use SAME-ORIGIN proxy; ticket in path so sub-resources (JS, CSS) inherit it
+        const origin = typeof window !== "undefined" ? window.location.origin : "";
+        const proxyUrl = `${origin}/api/scorm-proxy/${ticketRes.ticket}/${packageId}/${pkg.launchUrl}`;
+        setLaunchUrl(proxyUrl);
 
         // Attach API to window so SCORM content can find it
-        // SCORM content looks for API on window, window.parent, and window.top
         const api = buildScormAPI();
         if (version === "1.2") {
           (window as any).API = api;
           (window.top as any).API = api;
-          console.log('[SCORM Player] SCORM 1.2 API attached to window.API');
         } else {
           (window as any).API_1484_11 = api;
           (window.top as any).API_1484_11 = api;
-          console.log('[SCORM Player] SCORM 2004 API attached to window.API_1484_11');
         }
-
-        setLoading(false);
       } catch (err: any) {
-        console.error('[SCORM Player] Error loading package:', err);
         if (mounted) setError(err.message || "Failed to load SCORM package");
       }
     };
@@ -257,6 +261,8 @@ export function ScormPlayer({
 
   const reload = () => {
     if (iframeRef.current && launchUrl) {
+      setLoading(true);
+      setIframeReady(false);
       runtimeRef.current = {
         initialized: false,
         terminated: false,
@@ -267,15 +273,8 @@ export function ScormPlayer({
   };
 
   const handleIframeLoad = () => {
-    console.log('[SCORM Player] Iframe loaded successfully');
-    console.log('[SCORM Player] Iframe URL:', iframeRef.current?.src);
-    
-    // Check if API is accessible
-    if (version === "1.2") {
-      console.log('[SCORM Player] window.API available:', !!(window as any).API);
-    } else {
-      console.log('[SCORM Player] window.API_1484_11 available:', !!(window as any).API_1484_11);
-    }
+    setLoading(false);
+    setIframeReady(true);
   };
 
   useEffect(() => {
@@ -339,26 +338,30 @@ export function ScormPlayer({
       <div className="relative overflow-hidden rounded-b-xl border border-slate-200">
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
-              <p className="text-sm text-slate-500">
-                Loading SCORM content...
-              </p>
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative">
+                <div className="h-12 w-12 rounded-full border-4 border-slate-200" />
+                <div className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-transparent border-t-[var(--color-primary)]" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-slate-700">
+                  Loading content&hellip;
+                </p>
+                <p className="mt-1 text-xs text-slate-400">
+                  This may take a moment
+                </p>
+              </div>
             </div>
           </div>
         )}
         <iframe
           ref={iframeRef}
           src={launchUrl || "about:blank"}
-          className="h-[600px] w-full border-0"
+          className={`h-[600px] w-full border-0 transition-opacity duration-300 ${iframeReady ? "opacity-100" : "opacity-0"}`}
           title="SCORM Content"
           allow="fullscreen"
-          style={{ border: 'none' }}
+          style={{ border: "none" }}
           onLoad={handleIframeLoad}
-          onError={(e) => {
-            console.error('[SCORM Player] Iframe error:', e);
-            setError('Failed to load SCORM content. Check console for details.');
-          }}
         />
       </div>
 

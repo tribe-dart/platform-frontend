@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import type { Activity } from "@/types";
 import Link from "next/link";
 import { useProgressStore } from "@/stores/progressStore";
 import { apiFetch } from "@/lib/api";
@@ -16,7 +17,7 @@ interface Screen {
   _id: string;
   title: string;
   estimatedTime?: number;
-  activities: any[];
+  activities: Activity[];
   weekId: string;
   courseId: string;
 }
@@ -73,7 +74,7 @@ export default function ScreenPage({ params }: ScreenPageProps) {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        <Loader2 className="h-8 w-8 animate-spin text-(--color-primary)" />
       </div>
     );
   }
@@ -186,7 +187,7 @@ export default function ScreenPage({ params }: ScreenPageProps) {
           {nextScreen ? (
             <Link
               href={`/programmes/${programmeId}/courses/${courseId}/screens/${nextScreen._id}`}
-              className="flex items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+              className="flex items-center gap-2 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-hover)"
             >
               <span className="hidden sm:inline">Mark as Done & Next</span>
               <span className="sm:hidden">Next</span>
@@ -195,7 +196,7 @@ export default function ScreenPage({ params }: ScreenPageProps) {
           ) : (
             <Link
               href={`/programmes/${programmeId}/courses/${courseId}`}
-              className="flex items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+              className="flex items-center gap-2 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-hover)"
             >
               <span className="hidden sm:inline">Mark as Done & Finish</span>
               <span className="sm:hidden">Finish</span>

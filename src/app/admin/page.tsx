@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api';
 import {
   Users,
   Package,
@@ -12,6 +14,7 @@ import {
   ArrowRight,
   Newspaper,
   Calendar,
+  Loader2,
 } from 'lucide-react';
 
 const adminCards = [
@@ -73,7 +76,31 @@ const adminCards = [
   },
 ];
 
+interface AdminStats {
+  totalUsers: number;
+  activeProgrammes: number;
+  totalEnrollments: number;
+  pendingInvitations: number;
+}
+
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const data = await apiFetch('/stats/admin');
+        setStats(data);
+      } catch (err) {
+        console.error('Failed to load stats:', err);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    loadStats();
+  }, []);
+
   return (
     <div className="min-h-screen bg-[var(--surface-bg)]">
       <div className="mx-auto max-w-7xl px-3 py-6 sm:px-4 sm:py-8">
@@ -91,13 +118,13 @@ export default function AdminDashboard() {
               <Link
                 key={card.href}
                 href={card.href}
-                className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md hover:border-[var(--color-primary)]"
+                className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md hover:border-(--color-primary)"
               >
                 <div className="flex items-start justify-between">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${card.color}`}>
                     <Icon className="h-6 w-6" />
                   </div>
-                  <ArrowRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-1 group-hover:text-[var(--color-primary)]" />
+                  <ArrowRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-1 group-hover:text-(--color-primary)" />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-slate-900">
                   {card.title}
@@ -113,24 +140,38 @@ export default function AdminDashboard() {
             <Settings className="h-6 w-6 text-slate-400" />
             <h2 className="text-xl font-semibold text-slate-900">Quick Stats</h2>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg bg-slate-50 p-4">
-              <p className="text-sm text-slate-600">Total Users</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">-</p>
+          {loadingStats ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
             </div>
-            <div className="rounded-lg bg-slate-50 p-4">
-              <p className="text-sm text-slate-600">Active Programmes</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">-</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-lg bg-slate-50 p-4">
+                <p className="text-sm text-slate-600">Total Users</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {stats?.totalUsers ?? '-'}
+                </p>
+              </div>
+              <div className="rounded-lg bg-slate-50 p-4">
+                <p className="text-sm text-slate-600">Active Programmes</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {stats?.activeProgrammes ?? '-'}
+                </p>
+              </div>
+              <div className="rounded-lg bg-slate-50 p-4">
+                <p className="text-sm text-slate-600">Total Enrollments</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {stats?.totalEnrollments ?? '-'}
+                </p>
+              </div>
+              <div className="rounded-lg bg-slate-50 p-4">
+                <p className="text-sm text-slate-600">Pending Invitations</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {stats?.pendingInvitations ?? '-'}
+                </p>
+              </div>
             </div>
-            <div className="rounded-lg bg-slate-50 p-4">
-              <p className="text-sm text-slate-600">Total Enrollments</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">-</p>
-            </div>
-            <div className="rounded-lg bg-slate-50 p-4">
-              <p className="text-sm text-slate-600">Pending Invitations</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">-</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
