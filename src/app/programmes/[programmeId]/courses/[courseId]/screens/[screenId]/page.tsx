@@ -111,7 +111,7 @@ export default function ScreenPage({ params }: ScreenPageProps) {
   ];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 pb-24 pt-6 md:px-6 md:pb-8">
+    <div className="mx-auto max-w-3xl px-3 pb-24 pt-4 sm:px-4 sm:pt-6 md:px-6 md:pb-8">
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="mt-6">

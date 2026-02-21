@@ -39,7 +39,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="flex flex-col justify-center bg-white px-8 py-16 md:w-1/2 md:px-12 md:py-24"
+        className="flex flex-col justify-center bg-white px-5 py-10 sm:px-8 sm:py-16 md:w-1/2 md:px-12 md:py-24"
       >
         <div className="mx-auto max-w-md">
           <div className="mb-6">
@@ -49,14 +49,14 @@ export default function LoginPage() {
               width={300}
               height={93}
               priority
-              className="h-auto w-64"
+              className="h-auto w-48 sm:w-64"
             />
           </div>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mt-4 text-lg text-slate-600 md:text-xl"
+            className="mt-3 text-base text-slate-600 sm:mt-4 sm:text-lg md:text-xl"
           >
             Transform your career with world-class education
           </motion.p>
@@ -68,7 +68,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
-        className="flex flex-1 items-center justify-center bg-zinc-50 px-6 py-12 md:px-12"
+        className="flex flex-1 items-center justify-center bg-zinc-50 px-4 py-8 sm:px-6 sm:py-12 md:px-12"
       >
         <div className="w-full max-w-md">
           <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
