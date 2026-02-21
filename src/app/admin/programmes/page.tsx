@@ -12,6 +12,7 @@ import {
   X,
   Calendar,
   Users,
+  Eye,
 } from 'lucide-react';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
@@ -209,31 +210,45 @@ export default function ProgrammesAdminPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 border-t border-slate-100 pt-4">
-                    <Link
-                      href={`/admin/enrollments?programme=${programme._id}`}
-                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-                    >
-                      <Users className="h-4 w-4" />
-                      Enrollments
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setEditingProgramme(programme);
-                        setShowModal(true);
-                      }}
-                      className="rounded-lg border border-slate-200 p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-600"
-                      title="Edit"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(programme)}
-                      className="rounded-lg border border-red-200 p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                  <div className="space-y-2 border-t border-slate-100 pt-4">
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/programmes/${programme._id}/overview`}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
+                        title="View as Student"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View Programme
+                      </Link>
+                      <Link
+                        href={`/admin/enrollments?programme=${programme._id}`}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                      >
+                        <Users className="h-4 w-4" />
+                        Enrollments
+                      </Link>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingProgramme(programme);
+                          setShowModal(true);
+                        }}
+                        className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                        title="Edit"
+                      >
+                        <Edit2 className="inline h-4 w-4 mr-1.5" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(programme)}
+                        className="flex-1 rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                        title="Delete"
+                      >
+                        <Trash2 className="inline h-4 w-4 mr-1.5" />
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

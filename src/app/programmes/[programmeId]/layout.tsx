@@ -1,12 +1,22 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { getProgramme } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { apiFetch } from "@/lib/api";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
+
+interface Programme {
+  _id: string;
+  title: string;
+  institution: string;
+  description: string;
+  courses?: Array<{ _id: string; title: string }>;
+}
 
 export default function ProgrammeLayout({
   children,
@@ -15,9 +25,39 @@ export default function ProgrammeLayout({
 }) {
   const params = useParams();
   const programmeId = params.programmeId as string;
-  const programme = getProgramme(programmeId);
+  const [programme, setProgramme] = useState<Programme | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!programme) {
+  useEffect(() => {
+    const loadProgramme = async () => {
+      try {
+        setLoading(true);
+        const data = await apiFetch(`/programmes/${programmeId}`);
+        setProgramme(data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load programme');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (programmeId) {
+      loadProgramme();
+    }
+  }, [programmeId]);
+
+  if (loading) {
+    return (
+      <AuthGuard requireAuth>
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  if (error || !programme) {
     return (
       <AuthGuard requireAuth>
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 p-6">
@@ -25,8 +65,7 @@ export default function ProgrammeLayout({
             Programme not found
           </h1>
           <p className="text-slate-600">
-            The programme you&apos;re looking for doesn&apos;t exist or has been
-            removed.
+            {error || "The programme you're looking for doesn't exist or has been removed."}
           </p>
           <Link
             href="/dashboard"
@@ -39,8 +78,8 @@ export default function ProgrammeLayout({
     );
   }
 
-  const courses = programme.courses.map((c) => ({
-    id: c.id,
+  const courses = (programme.courses || []).map((c) => ({
+    id: c._id,
     title: c.title,
   }));
 

@@ -84,7 +84,7 @@ export default function UsersAdminPage() {
 
   return (
     <div className="min-h-screen bg-[var(--surface-bg)]">
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-3 py-6 sm:px-4 sm:py-8">
         <div className="mb-8">
           <Link
             href="/admin"
@@ -93,16 +93,16 @@ export default function UsersAdminPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to Admin Dashboard
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
-              <p className="mt-1 text-slate-500">
+              <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">User Management</h1>
+              <p className="mt-1 text-sm text-slate-500 sm:text-base">
                 Manage all platform users and their roles
               </p>
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+              className="flex items-center justify-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)] sm:w-auto"
             >
               <Plus className="h-4 w-4" />
               Create User
@@ -161,8 +161,8 @@ export default function UsersAdminPage() {
             <p className="text-slate-500">No users found</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-            <table className="w-full">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white sm:overflow-x-auto">
+            <table className="w-full responsive-table">
               <thead className="border-b border-slate-200 bg-slate-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">
@@ -182,13 +182,13 @@ export default function UsersAdminPage() {
               <tbody className="divide-y divide-slate-200">
                 {users.map((user) => (
                   <tr key={user._id} className="transition-colors hover:bg-slate-50">
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4" data-label="User">
                       <div>
                         <p className="font-medium text-slate-900">{user.name}</p>
                         <p className="text-sm text-slate-500">{user.email}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4" data-label="Role">
                       <span
                         className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
                           roleColors[user.role]
@@ -198,10 +198,10 @@ export default function UsersAdminPage() {
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-600">
+                    <td className="px-4 py-3 text-sm text-slate-600 sm:px-6 sm:py-4" data-label="Created">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4" data-label="Actions">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setEditingUser(user)}

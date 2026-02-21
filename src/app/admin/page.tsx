@@ -10,6 +10,8 @@ import {
   BarChart3,
   Settings,
   ArrowRight,
+  Newspaper,
+  Calendar,
 } from 'lucide-react';
 
 const adminCards = [
@@ -49,6 +51,20 @@ const adminCards = [
     color: 'bg-cyan-100 text-cyan-600',
   },
   {
+    title: 'News & Announcements',
+    description: 'Post updates and news for programmes',
+    icon: Newspaper,
+    href: '/admin/news',
+    color: 'bg-indigo-100 text-indigo-600',
+  },
+  {
+    title: 'Calendar Events',
+    description: 'Manage events, deadlines, and live classes',
+    icon: Calendar,
+    href: '/admin/calendar',
+    color: 'bg-teal-100 text-teal-600',
+  },
+  {
     title: 'Analytics',
     description: 'View platform usage and learning analytics',
     icon: BarChart3,
@@ -60,15 +76,15 @@ const adminCards = [
 export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-[var(--surface-bg)]">
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+      <div className="mx-auto max-w-7xl px-3 py-6 sm:px-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Admin Dashboard</h1>
           <p className="mt-2 text-slate-600">
             Manage users, programmes, content, and platform settings
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {adminCards.map((card) => {
             const Icon = card.icon;
             return (

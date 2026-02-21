@@ -64,6 +64,7 @@ export function ScormPlayer({
     if (version === "1.2") {
       return {
         LMSInitialize: (_param: string = "") => {
+          console.log('[SCORM API] LMSInitialize called');
           if (runtime.initialized) return "true";
           runtime.initialized = true;
           runtime.terminated = false;
@@ -193,7 +194,10 @@ export function ScormPlayer({
 
     const loadPackage = async () => {
       try {
+        console.log('[SCORM Player] Loading package:', packageId);
         const pkg = await apiFetch(`/scorm/packages/${packageId}`);
+        console.log('[SCORM Player] Package loaded:', pkg);
+        
         if (!mounted) return;
 
         if (pkg.status !== "ready") {
@@ -201,18 +205,25 @@ export function ScormPlayer({
           return;
         }
 
+        console.log('[SCORM Player] Launch URL:', pkg.fullLaunchUrl);
         setLaunchUrl(pkg.fullLaunchUrl);
 
         // Attach API to window so SCORM content can find it
+        // SCORM content looks for API on window, window.parent, and window.top
         const api = buildScormAPI();
         if (version === "1.2") {
           (window as any).API = api;
+          (window.top as any).API = api;
+          console.log('[SCORM Player] SCORM 1.2 API attached to window.API');
         } else {
           (window as any).API_1484_11 = api;
+          (window.top as any).API_1484_11 = api;
+          console.log('[SCORM Player] SCORM 2004 API attached to window.API_1484_11');
         }
 
         setLoading(false);
       } catch (err: any) {
+        console.error('[SCORM Player] Error loading package:', err);
         if (mounted) setError(err.message || "Failed to load SCORM package");
       }
     };
@@ -252,6 +263,18 @@ export function ScormPlayer({
         lastError: "0",
       };
       iframeRef.current.src = launchUrl;
+    }
+  };
+
+  const handleIframeLoad = () => {
+    console.log('[SCORM Player] Iframe loaded successfully');
+    console.log('[SCORM Player] Iframe URL:', iframeRef.current?.src);
+    
+    // Check if API is accessible
+    if (version === "1.2") {
+      console.log('[SCORM Player] window.API available:', !!(window as any).API);
+    } else {
+      console.log('[SCORM Player] window.API_1484_11 available:', !!(window as any).API_1484_11);
     }
   };
 
@@ -329,8 +352,13 @@ export function ScormPlayer({
           src={launchUrl || "about:blank"}
           className="h-[600px] w-full border-0"
           title="SCORM Content"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           allow="fullscreen"
+          style={{ border: 'none' }}
+          onLoad={handleIframeLoad}
+          onError={(e) => {
+            console.error('[SCORM Player] Iframe error:', e);
+            setError('Failed to load SCORM content. Check console for details.');
+          }}
         />
       </div>
 

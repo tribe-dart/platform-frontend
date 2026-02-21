@@ -1,24 +1,64 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState, useMemo } from "react";
-import { getProgramme } from "@/lib/mock-data";
-import { teamMembers } from "@/lib/mock-data";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { apiFetch } from "@/lib/api";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { Search, MapPin } from "lucide-react";
-import type { TeamMember } from "@/types";
+import { Search, MapPin, Loader2, Mail } from "lucide-react";
 
 type FilterTab = "all" | "students" | "instructors" | "tas";
+
+interface Programme {
+  _id: string;
+  title: string;
+}
+
+interface TeamMember {
+  _id: string;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+  role: 'student' | 'instructor' | 'ta';
+  status: string;
+  enrolledAt: string;
+}
 
 export default function TeamPage() {
   const params = useParams();
   const programmeId = params.programmeId as string;
-  const programme = getProgramme(programmeId);
+  const [programme, setProgramme] = useState<Programme | null>(null);
+  const [enrollments, setEnrollments] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterTab>("all");
 
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [programmeData, enrollmentsData] = await Promise.all([
+        apiFetch(`/programmes/${programmeId}`),
+        apiFetch(`/enrollments/programme/${programmeId}/team`),
+      ]);
+      setProgramme(programmeData);
+      setEnrollments(enrollmentsData.enrollments || []);
+    } catch (err) {
+      console.error('Failed to load team:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [programmeId]);
+
+  useEffect(() => {
+    if (programmeId) {
+      loadData();
+    }
+  }, [programmeId, loadData]);
+
   const filteredMembers = useMemo(() => {
-    let members = teamMembers;
+    let members = enrollments;
     if (filter !== "all") {
       const roleMap: Record<FilterTab, string> = {
         all: "",
@@ -33,12 +73,20 @@ export default function TeamPage() {
       const q = search.toLowerCase();
       members = members.filter(
         (m) =>
-          `${m.firstName} ${m.lastName}`.toLowerCase().includes(q) ||
-          m.email.toLowerCase().includes(q)
+          m.userId.name.toLowerCase().includes(q) ||
+          m.userId.email.toLowerCase().includes(q)
       );
     }
     return members;
-  }, [search, filter]);
+  }, [enrollments, search, filter]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+      </div>
+    );
+  }
 
   if (!programme) return null;
 
@@ -101,15 +149,17 @@ export default function TeamPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {filteredMembers.map((member) => (
-            <MemberCard key={member.id} member={member} roleBadgeStyles={roleBadgeStyles} />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredMembers.map((enrollment) => (
+            <MemberCard key={enrollment._id} enrollment={enrollment} roleBadgeStyles={roleBadgeStyles} />
           ))}
         </div>
 
         {filteredMembers.length === 0 && (
           <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-            <p className="text-slate-600">No team members found.</p>
+            <p className="text-slate-600">
+              {search ? 'No team members found matching your search.' : 'No team members enrolled yet.'}
+            </p>
           </div>
         )}
       </div>
@@ -118,66 +168,52 @@ export default function TeamPage() {
 }
 
 function MemberCard({
-  member,
+  enrollment,
   roleBadgeStyles,
 }: {
-  member: TeamMember;
+  enrollment: TeamMember;
   roleBadgeStyles: Record<string, string>;
 }) {
-  const initials = `${member.firstName[0]}${member.lastName[0]}`.toUpperCase();
-  const roleStyle = roleBadgeStyles[member.role] ?? "bg-slate-100 text-slate-600";
+  const user = enrollment.userId;
+  const initials = user.name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+  const roleStyle = roleBadgeStyles[enrollment.role] ?? "bg-slate-100 text-slate-600";
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-start gap-4 p-5">
         <div className="relative shrink-0">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-sm font-semibold text-[var(--color-primary)]">
             {initials}
           </div>
-          {member.isOnline && (
-            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
-          )}
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-slate-900">
-            {member.firstName} {member.lastName}
+            {user.name}
           </h3>
           <span
             className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${roleStyle}`}
           >
-            {member.role}
+            {enrollment.role}
           </span>
         </div>
       </div>
       <div className="border-t border-slate-100 px-5 py-3">
-        {member.location && (
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <MapPin className="h-4 w-4 shrink-0" />
-            <span className="truncate">{member.location}</span>
-          </div>
-        )}
-        {member.bio && (
-          <p className="mt-2 line-clamp-2 text-sm text-slate-600">
-            {member.bio}
-          </p>
-        )}
-        {member.courses && member.courses.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {member.courses.slice(0, 2).map((course) => (
-              <span
-                key={course}
-                className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
-              >
-                {course}
-              </span>
-            ))}
-            {member.courses.length > 2 && (
-              <span className="text-xs text-slate-500">
-                +{member.courses.length - 2} more
-              </span>
-            )}
-          </div>
-        )}
+        <div className="flex items-center gap-2 text-sm text-slate-600">
+          <Mail className="h-4 w-4 shrink-0" />
+          <span className="truncate">{user.email}</span>
+        </div>
+        <div className="mt-2 text-xs text-slate-500">
+          Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </div>
       </div>
     </div>
   );

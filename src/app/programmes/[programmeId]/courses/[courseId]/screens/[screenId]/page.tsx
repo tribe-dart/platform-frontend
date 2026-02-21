@@ -1,24 +1,82 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useProgressStore } from "@/stores/progressStore";
-import { getCourse, getProgramme, getScreen } from "@/lib/mock-data";
+import { apiFetch } from "@/lib/api";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ActivityCard } from "./ActivityCard";
-import { ChevronLeft, ChevronRight, CheckCircle2, Circle, CircleDot, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, Circle, CircleDot, Clock, Loader2 } from "lucide-react";
 
 interface ScreenPageProps {
   params: Promise<{ programmeId: string; courseId: string; screenId: string }>;
 }
 
+interface Screen {
+  _id: string;
+  title: string;
+  estimatedTime?: number;
+  activities: any[];
+  weekId: string;
+  courseId: string;
+}
+
+interface Course {
+  _id: string;
+  title: string;
+  weeks: Array<{
+    _id: string;
+    weekNumber: number;
+    title: string;
+    screens: Array<{ _id: string; title: string }>;
+  }>;
+}
+
+interface Programme {
+  _id: string;
+  title: string;
+}
+
 export default function ScreenPage({ params }: ScreenPageProps) {
   const { programmeId, courseId, screenId } = use(params);
-  const screen = getScreen(screenId);
-  const course = getCourse(courseId);
-  const programme = getProgramme(programmeId);
+  const [screen, setScreen] = useState<Screen | null>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [programme, setProgramme] = useState<Programme | null>(null);
+  const [loading, setLoading] = useState(true);
   const setScreenStatus = useProgressStore((s) => s.setScreenStatus);
   const screenStatuses = useProgressStore((s) => s.screenStatuses);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [screenData, courseData, programmeData] = await Promise.all([
+          apiFetch(`/screens/${screenId}`),
+          apiFetch(`/courses/${courseId}`),
+          apiFetch(`/programmes/${programmeId}`),
+        ]);
+        setScreen(screenData);
+        setCourse(courseData);
+        setProgramme(programmeData);
+      } catch (err) {
+        console.error('Failed to load screen data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (programmeId && courseId && screenId) {
+      loadData();
+    }
+  }, [programmeId, courseId, screenId]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+      </div>
+    );
+  }
 
   if (!screen || !course || !programme) {
     return (
@@ -28,15 +86,15 @@ export default function ScreenPage({ params }: ScreenPageProps) {
     );
   }
 
-  const status = (screenStatuses[screen.id] ?? screen.status) as
+  const status = (screenStatuses[screen._id] ?? 'unread') as
     | "unread"
     | "review"
     | "done";
 
-  const week = course.weeks.find((w) => w.id === screen.weekId);
-  const weekNumber = week?.number ?? 0;
+  const week = course.weeks.find((w) => w._id === screen.weekId);
+  const weekNumber = week?.weekNumber ?? 0;
   const allScreens = course.weeks.flatMap((w) => w.screens);
-  const currentIndex = allScreens.findIndex((s) => s.id === screenId);
+  const currentIndex = allScreens.findIndex((s) => s._id === screenId);
   const prevScreen = currentIndex > 0 ? allScreens[currentIndex - 1] : null;
   const nextScreen =
     currentIndex >= 0 && currentIndex < allScreens.length - 1
@@ -73,7 +131,7 @@ export default function ScreenPage({ params }: ScreenPageProps) {
             <button
               key={s}
               type="button"
-              onClick={() => setScreenStatus(screen.id, s)}
+              onClick={() => setScreenStatus(screen._id, s)}
               className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                 status === s
                   ? s === "done"
@@ -92,20 +150,17 @@ export default function ScreenPage({ params }: ScreenPageProps) {
           ))}
         </div>
 
-        {/* Narrative text */}
-        {screen.narrativeText && (
-          <div className="mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="leading-relaxed text-slate-700">
-              {screen.narrativeText}
-            </p>
-          </div>
-        )}
-
         {/* Activity Renderer */}
         <div className="space-y-6">
-          {screen.activities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
-          ))}
+          {screen.activities && screen.activities.length > 0 ? (
+            screen.activities.map((activity, index) => (
+              <ActivityCard key={activity.id || index} activity={activity} />
+            ))
+          ) : (
+            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+              No activities in this screen yet.
+            </div>
+          )}
         </div>
       </div>
 
@@ -114,7 +169,7 @@ export default function ScreenPage({ params }: ScreenPageProps) {
         <div className="flex flex-1 items-center justify-between gap-4 md:max-w-3xl md:mx-auto md:px-0">
           {prevScreen ? (
             <Link
-              href={`/programmes/${programmeId}/courses/${courseId}/screens/${prevScreen.id}`}
+              href={`/programmes/${programmeId}/courses/${courseId}/screens/${prevScreen._id}`}
               className="flex items-center gap-2 text-slate-600 transition-colors hover:text-slate-900"
             >
               <ChevronLeft className="h-5 w-5" />
@@ -122,7 +177,6 @@ export default function ScreenPage({ params }: ScreenPageProps) {
             </Link>
           ) : (
             <div />
-
           )}
 
           <span className="text-sm font-medium text-slate-500">
@@ -131,7 +185,7 @@ export default function ScreenPage({ params }: ScreenPageProps) {
 
           {nextScreen ? (
             <Link
-              href={`/programmes/${programmeId}/courses/${courseId}/screens/${nextScreen.id}`}
+              href={`/programmes/${programmeId}/courses/${courseId}/screens/${nextScreen._id}`}
               className="flex items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
             >
               <span className="hidden sm:inline">Mark as Done & Next</span>

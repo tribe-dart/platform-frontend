@@ -1,9 +1,9 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useProgressStore } from "@/stores/progressStore";
-import { getCourse } from "@/lib/mock-data";
+import { apiFetch } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
@@ -15,11 +15,33 @@ import {
   BookOpen,
   Video,
   MessageSquare,
+  Loader2,
 } from "lucide-react";
-import { useState } from "react";
 
 interface CoursePageProps {
   params: Promise<{ programmeId: string; courseId: string }>;
+}
+
+interface Screen {
+  _id: string;
+  title: string;
+  estimatedTime?: number;
+  activities: any[];
+}
+
+interface Week {
+  _id: string;
+  weekNumber: number;
+  title: string;
+  screens: Screen[];
+}
+
+interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  thumbnail?: string;
+  weeks: Week[];
 }
 
 type TabId = "overview" | "assessment" | "reading" | "live" | "forum";
@@ -64,10 +86,37 @@ function StatusBadge({
 
 export default function CoursePage({ params }: CoursePageProps) {
   const { programmeId, courseId } = use(params);
-  const course = getCourse(courseId);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
   const screenStatuses = useProgressStore((s) => s.screenStatuses);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [expandedWeeks, setExpandedWeeks] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const loadCourse = async () => {
+      try {
+        setLoading(true);
+        const data = await apiFetch(`/courses/${courseId}`);
+        setCourse(data);
+      } catch (err) {
+        console.error('Failed to load course:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (courseId) {
+      loadCourse();
+    }
+  }, [courseId]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -77,16 +126,15 @@ export default function CoursePage({ params }: CoursePageProps) {
     );
   }
 
-  const completedCount =
-    course.weeks.reduce(
-      (acc, w) =>
-        acc +
-        w.screens.filter(
-          (s) => (screenStatuses[s.id] ?? s.status) === "done"
-        ).length,
-      0
-    ) || course.completedScreens;
-  const totalScreens = course.screenCount;
+  const totalScreens = course.weeks.reduce((acc, w) => acc + w.screens.length, 0);
+  const completedCount = course.weeks.reduce(
+    (acc, w) =>
+      acc +
+      w.screens.filter(
+        (s) => (screenStatuses[s._id] ?? 'unread') === "done"
+      ).length,
+    0
+  );
 
   const toggleWeek = (weekId: string) => {
     setExpandedWeeks((prev) => {
@@ -99,7 +147,7 @@ export default function CoursePage({ params }: CoursePageProps) {
 
   const assessedActivities = course.weeks.flatMap((week) =>
     week.screens.flatMap((screen) =>
-      screen.activities
+      (screen.activities || [])
         .filter((a) => a.isAssessed)
         .map((a) => ({ ...a, screen, week }))
     )
@@ -107,31 +155,26 @@ export default function CoursePage({ params }: CoursePageProps) {
 
   const liveClassActivities = course.weeks.flatMap((week) =>
     week.screens.flatMap((screen) =>
-      screen.activities
+      (screen.activities || [])
         .filter((a) => a.type === "live_class")
         .map((a) => ({ ...a, screen, week }))
     )
   );
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 md:px-6">
+    <div className="mx-auto max-w-4xl px-3 py-6 sm:px-4 sm:py-8 md:px-6">
       {/* Course header */}
       <div className="mb-8">
         <h1 className="mb-2 text-2xl font-bold text-slate-900 md:text-3xl">
           {course.title}
         </h1>
-        <p className="mb-3 text-sm text-slate-600">
-          {course.instructors
-            .map((i) => `${i.firstName} ${i.lastName}`)
-            .join(", ")}
-        </p>
         <p className="mb-4 text-slate-600">{course.description}</p>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 sm:text-sm">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
             {completedCount} of {totalScreens} screens completed
           </div>
-          <div className="h-2 flex-1 max-w-xs rounded-full bg-slate-200">
+          <div className="h-2 flex-1 rounded-full bg-slate-200 sm:max-w-xs">
             <motion.div
               className="h-full rounded-full bg-[var(--color-primary)]"
               initial={{ width: 0 }}
@@ -145,7 +188,7 @@ export default function CoursePage({ params }: CoursePageProps) {
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-1 overflow-x-auto border-b border-slate-200 pb-px">
+      <div className="mb-6 flex gap-1 overflow-x-auto border-b border-slate-200 pb-px scrollable-tabs">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -174,10 +217,10 @@ export default function CoursePage({ params }: CoursePageProps) {
             transition={{ duration: 0.2 }}
             className="space-y-4"
           >
-            {course.weeks.map((week) => {
-              const isExpanded = expandedWeeks.has(week.id);
+            {course.weeks.map((week, weekIndex) => {
+              const isExpanded = expandedWeeks.has(week._id);
               const weekCompleted = week.screens.filter(
-                (s) => (screenStatuses[s.id] ?? s.status) === "done"
+                (s) => (screenStatuses[s._id] ?? 'unread') === "done"
               ).length;
               const weekTotal = week.screens.length;
               const weekProgress =
@@ -185,21 +228,21 @@ export default function CoursePage({ params }: CoursePageProps) {
 
               return (
                 <div
-                  key={week.id}
+                  key={week._id}
                   className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
                 >
                   <button
                     type="button"
-                    onClick={() => toggleWeek(week.id)}
+                    onClick={() => toggleWeek(week._id)}
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50"
                   >
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
-                        {week.number}
+                        {week.weekNumber}
                       </span>
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold text-slate-900">
-                          Week {week.number}: {week.title}
+                          Week {week.weekNumber}: {week.title}
                         </h3>
                         <div className="mt-1 flex items-center gap-3">
                           <div className="h-1.5 flex-1 max-w-[120px] rounded-full bg-slate-200">
@@ -211,7 +254,7 @@ export default function CoursePage({ params }: CoursePageProps) {
                           <span className="text-xs text-slate-500">
                             {weekCompleted}/{weekTotal} completed
                           </span>
-                          {week.isCompleted && (
+                          {weekCompleted === weekTotal && weekTotal > 0 && (
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
                           )}
                         </div>
@@ -235,19 +278,18 @@ export default function CoursePage({ params }: CoursePageProps) {
                         className="overflow-hidden border-t border-slate-100"
                       >
                         <ul className="divide-y divide-slate-100">
-                          {week.screens.map((screen) => {
-                            const status = (screenStatuses[screen.id] ??
-                              screen.status) as "unread" | "review" | "done";
+                          {week.screens.map((screen, screenIndex) => {
+                            const status = (screenStatuses[screen._id] ?? 'unread') as "unread" | "review" | "done";
                             return (
-                              <li key={screen.id}>
+                              <li key={screen._id}>
                                 <Link
-                                  href={`/programmes/${programmeId}/courses/${courseId}/screens/${screen.id}`}
+                                  href={`/programmes/${programmeId}/courses/${courseId}/screens/${screen._id}`}
                                   className="flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-slate-50"
                                 >
                                   <div className="flex min-w-0 flex-1 items-center gap-3">
                                     <StatusBadge status={status} />
                                     <span className="text-sm font-medium text-slate-800">
-                                      {screen.number}. {screen.title}
+                                      {screenIndex + 1}. {screen.title}
                                     </span>
                                   </div>
                                   {screen.estimatedTime && (
@@ -285,17 +327,17 @@ export default function CoursePage({ params }: CoursePageProps) {
                 No assessed activities in this course yet.
               </div>
             ) : (
-              assessedActivities.map(({ id, title, screen, week }) => (
+              assessedActivities.map((activity) => (
                 <Link
-                  key={id}
-                  href={`/programmes/${programmeId}/courses/${courseId}/screens/${screen.id}`}
+                  key={activity.id}
+                  href={`/programmes/${programmeId}/courses/${courseId}/screens/${activity.screen._id}`}
                   className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-slate-900">{title}</h4>
+                      <h4 className="font-medium text-slate-900">{activity.title}</h4>
                       <p className="text-sm text-slate-500">
-                        Week {week.number} · {screen.title}
+                        Week {activity.week.weekNumber} · {activity.screen.title}
                       </p>
                     </div>
                     <ChevronRight className="h-5 w-5 text-slate-400" />
@@ -334,8 +376,8 @@ export default function CoursePage({ params }: CoursePageProps) {
                 No live classes scheduled for this course.
               </div>
             ) : (
-              liveClassActivities.map(({ id, title, config, screen }) => {
-                const cfg = config as {
+              liveClassActivities.map((activity) => {
+                const cfg = activity.config as {
                   date?: string;
                   time?: string;
                   platform?: string;
@@ -343,10 +385,10 @@ export default function CoursePage({ params }: CoursePageProps) {
                 };
                 return (
                   <div
-                    key={id}
+                    key={activity.id}
                     className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
                   >
-                    <h4 className="font-medium text-slate-900">{title}</h4>
+                    <h4 className="font-medium text-slate-900">{activity.title}</h4>
                     <p className="mt-1 text-sm text-slate-500">
                       {cfg.date} · {cfg.time} · {cfg.platform}
                     </p>

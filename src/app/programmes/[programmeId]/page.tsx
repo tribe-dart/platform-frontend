@@ -44,7 +44,7 @@ export default function ProgrammePage() {
 
   return (
     <div className="flex flex-col">
-      <div className="border-b border-slate-200 bg-white px-4 py-6 md:px-6">
+      <div className="border-b border-slate-200 bg-white px-3 py-4 sm:px-4 sm:py-6 md:px-6">
         <Breadcrumb items={breadcrumbItems} />
         <h1 className="mt-4 text-2xl font-bold text-slate-900 md:text-3xl">
           {programme.title}
@@ -75,10 +75,10 @@ export default function ProgrammePage() {
       </div>
 
       <div className="border-b border-slate-200 bg-white">
-        <nav className="flex gap-1 px-4 md:px-6" aria-label="Tabs">
+        <nav className="scrollable-tabs flex gap-1 overflow-x-auto px-3 sm:px-4 md:px-6" aria-label="Tabs">
           <Link
             href={`${basePath}?tab=overview`}
-            className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition-colors sm:px-4 ${
               tab === "overview"
                 ? "border-[var(--color-primary)] text-[var(--color-primary)]"
                 : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
@@ -88,7 +88,7 @@ export default function ProgrammePage() {
           </Link>
           <Link
             href={`${basePath}?tab=courses`}
-            className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition-colors sm:px-4 ${
               tab === "courses"
                 ? "border-[var(--color-primary)] text-[var(--color-primary)]"
                 : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
@@ -98,25 +98,25 @@ export default function ProgrammePage() {
           </Link>
           <Link
             href={`${basePath}/team`}
-            className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+            className="whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 sm:px-4"
           >
             Team
           </Link>
           <Link
             href={`${basePath}/newsfeed`}
-            className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+            className="whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 sm:px-4"
           >
             Newsfeed
           </Link>
           <Link
             href={`${basePath}/calendar`}
-            className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+            className="whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 sm:px-4"
           >
             Calendar
           </Link>
           <Link
             href={`${basePath}/grades`}
-            className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+            className="whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 sm:px-4"
           >
             Grades
           </Link>
