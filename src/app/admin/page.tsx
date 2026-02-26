@@ -102,7 +102,7 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[var(--surface-bg)]">
+    <div className="min-h-screen bg-(--surface-bg)">
       <div className="mx-auto max-w-7xl px-3 py-6 sm:px-4 sm:py-8">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Admin Dashboard</h1>
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
           </div>
           {loadingStats ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+              <Loader2 className="h-8 w-8 animate-spin text-(--color-primary)" />
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

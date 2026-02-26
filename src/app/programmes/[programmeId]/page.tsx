@@ -32,10 +32,16 @@ interface Programme {
   courses?: Course[];
 }
 
+interface Screen {
+  _id: string;
+  title: string;
+  order?: number;
+}
+
 interface Course {
   _id: string;
   title: string;
-  weeks?: Array<{ _id: string; weekNumber: number; screens: any[] }>;
+  weeks?: Array<{ _id: string; weekNumber: number; screens: Screen[] }>;
 }
 
 interface ScormPackageInfo {
@@ -53,7 +59,7 @@ export default function ProgrammePage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const programmeId = params.programmeId as string;
-  const { user } = useAuthStore();
+  useAuthStore();
   const tab = (searchParams.get("tab") as Tab) || "courses";
 
   const [programme, setProgramme] = useState<Programme | null>(null);
@@ -84,7 +90,7 @@ export default function ProgrammePage() {
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-primary)]" />
+        <Loader2 className="h-8 w-8 animate-spin text-(--color-primary)" />
       </div>
     );
   }
@@ -145,7 +151,7 @@ export default function ProgrammePage() {
             href={`${basePath}?tab=overview`}
             className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition-colors sm:px-4 ${
               tab === "overview"
-                ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+                ? "border-(--color-primary) text-(--color-primary)"
                 : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
             }`}
           >
@@ -155,7 +161,7 @@ export default function ProgrammePage() {
             href={`${basePath}?tab=courses`}
             className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition-colors sm:px-4 ${
               tab === "courses"
-                ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+                ? "border-(--color-primary) text-(--color-primary)"
                 : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
             }`}
           >
@@ -211,7 +217,7 @@ export default function ProgrammePage() {
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="flex gap-4 rounded-xl bg-white p-6 shadow-sm">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-orange-100">
-                    <BookOpen className="h-6 w-6 text-[var(--color-primary)]" />
+                    <BookOpen className="h-6 w-6 text-(--color-primary)" />
                   </div>
                   <div>
                     <h3 className="font-medium text-slate-900">Key Info</h3>
@@ -284,7 +290,7 @@ export default function ProgrammePage() {
                         <button
                           type="button"
                           onClick={() => setViewingScorm(pkg)}
-                          className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+                          className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-(--color-primary) px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-hover)"
                         >
                           <Eye className="h-4 w-4" />
                           Launch Module

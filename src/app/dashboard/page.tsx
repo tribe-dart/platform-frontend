@@ -36,10 +36,6 @@ function ProgrammeCard({
   programme: Programme;
   index: number;
 }) {
-  const inProgress = programme.courses.filter(
-    (c) => c.status === 'in_progress'
-  ).length;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
